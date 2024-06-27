@@ -4,15 +4,13 @@
 #include <cstdint>
 #include <fstream>
 #include <expected>
-#include <type_traits>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 #include <memory>
 
-enum class TomlResult {
-	Ok,
-	ReadErr
+enum class TomlError {
+	ReadFailed
 };
 
 // TOML Types
@@ -51,9 +49,9 @@ public:
 	}
 };
 
-typedef TomlTable Toml;
+typedef TomlTable Toml; // A root-level toml content can be seen as just a regular table
 
-std::expected<Toml, TomlResult>
+std::expected<Toml, TomlError>
 tomlparse(std::ifstream &file);
 
 #endif

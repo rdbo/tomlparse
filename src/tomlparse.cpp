@@ -34,8 +34,30 @@ tokenize_toml_content(std::string &content)
 			} else {
 				tokens.push_back(Token { type: TokenType::Number, value: std::string(1, c) });
 			}
+		} else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+			if (!tokens.empty() && tokens.back().type == TokenType::Identifier) {
+				tokens.back().value.push_back(c);
+			} else {
+				tokens.push_back(Token { type: TokenType::Identifier, value: std::string(1, c) });
+			}
+		} else {
+			TokenType tt;
+			
+			switch (c) {
+			case '[':
+				tt = TokenType::OpenBrace;
+				break;
+			case ']':
+				tt = TokenType::CloseBrace;
+				break;
+			case '=':
+				tt = TokenType::Equals;
+				break;
+			default:
+				continue;
+			}
 
-			continue;
+			tokens.push_back(Token { type: tt, value: std::string(1, c) });
 		}
 	}
 

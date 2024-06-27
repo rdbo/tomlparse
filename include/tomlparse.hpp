@@ -11,7 +11,15 @@
 
 namespace tomlparse {
 	enum class Error {
-		ReadFailed
+		MalformedContent,
+	};
+
+	enum class Type {
+		Table,
+		Int,
+		Float,
+		Bool,
+		String
 	};
 
 	// TOML Types
@@ -19,17 +27,24 @@ namespace tomlparse {
 	typedef std::int64_t Int;
 	typedef double       Float;
 	typedef bool         Bool;
+	typedef std::string  String;
 	template <typename T>
 	class Array: public std::vector<T> {  };
 
 	class Entry {
 	private:
-		std::unique_ptr<std::variant<Table, Int, Float, Bool, Array<Entry>>> value;
+		std::unique_ptr<std::variant<Table, Int, Float, Bool, String, Array<Entry>>> value;
+		Type value_type;
 	public:
 		template <typename T>
 		inline T get()
 		{
 			return std::get<T>(*this->value.get());
+		}
+
+		inline Type type()
+		{
+			return this->value_type;
 		}
 	};
 

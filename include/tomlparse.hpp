@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include <memory>
 
 enum class TomlResult {
 	Ok,
@@ -24,12 +25,12 @@ class TomlArray: public std::vector<T> {  };
 
 class TomlEntry {
 private:
-	std::variant<TomlTable, TomlInt, TomlFloat, TomlBool, TomlArray<TomlEntry>> value;
+	std::unique_ptr<std::variant<TomlTable, TomlInt, TomlFloat, TomlBool, TomlArray<TomlEntry>>> value;
 public:
 	template <typename T>
 	inline T get()
 	{
-		return std::get<T>(this->value);
+		return std::get<T>(*this->value.get());
 	}
 };
 

@@ -10,6 +10,8 @@ enum class TokenType {
 	Equals,
 	Number,
 	Dot,
+	DoubleQuote,
+	Quote,
 	LeftBrace,
 	RightBrace,
 	LeftBracket,
@@ -64,6 +66,12 @@ tokenize_toml_content(std::string &content)
 				break;
 			case '.':
 				tt = TokenType::Dot;
+				break;
+			case '"':
+				tt = TokenType::DoubleQuote;
+				break;
+			case '\'':
+				tt = TokenType::Quote;
 				break;
 			default:
 				continue;

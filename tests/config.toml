@@ -1,3 +1,5 @@
 [mytable]
 field = "hello"
 mynumber = 1337
+myfloat = 42.69
+mytable = { subfield = "abc" }

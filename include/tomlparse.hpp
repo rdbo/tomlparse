@@ -11,7 +11,7 @@
 
 namespace tomlparse {
 	enum class Error {
-		MalformedContent,
+		UnexpectedToken,
 	};
 
 	enum class Type {

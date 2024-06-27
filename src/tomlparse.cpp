@@ -9,8 +9,11 @@ enum class TokenType {
 	Identifier,
 	Equals,
 	Number,
-	OpenBrace,
-	CloseBrace,
+	Dot,
+	LeftBrace,
+	RightBrace,
+	LeftBracket,
+	RightBracket,
 };
 
 struct Token {
@@ -45,13 +48,22 @@ tokenize_toml_content(std::string &content)
 			
 			switch (c) {
 			case '[':
-				tt = TokenType::OpenBrace;
+				tt = TokenType::LeftBracket;
 				break;
 			case ']':
-				tt = TokenType::CloseBrace;
+				tt = TokenType::RightBracket;
+				break;
+			case '{':
+				tt = TokenType::LeftBrace;
+				break;
+			case '}':
+				tt = TokenType::RightBrace;
 				break;
 			case '=':
 				tt = TokenType::Equals;
+				break;
+			case '.':
+				tt = TokenType::Dot;
 				break;
 			default:
 				continue;
@@ -65,16 +77,9 @@ tokenize_toml_content(std::string &content)
 }
 
 std::expected<Toml, Error>
-parse_toml_content(std::string &content)
+parse_toml_tokens(std::vector<Token> &tokens)
 {
-	auto tokens = tokenize_toml_content(content);
-
-	std::cout << "Token count: " << tokens.size() << std::endl;
-	for (auto &token : tokens) {
-		std::cout << "Token: " << static_cast<int>(token.type) << ", " << token.value << std::endl;
-	}
-	
-	return std::unexpected(Error::MalformedContent);
+	return std::unexpected(Error::UnexpectedToken);
 }
 
 std::expected<Toml, Error>
@@ -82,7 +87,13 @@ tomlparse::parse(std::ifstream &file)
 {
 	std::stringstream ss;
 	ss << file.rdbuf();
-
 	auto content = ss.str();
-	return parse_toml_content(content);
+
+	auto tokens = tokenize_toml_content(content);
+	std::cout << "Token count: " << tokens.size() << std::endl;
+	for (auto &token : tokens) {
+		std::cout << "Token: " << static_cast<int>(token.type) << ", " << token.value << std::endl;
+	}
+
+	return parse_toml_tokens(tokens);
 }

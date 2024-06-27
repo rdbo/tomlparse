@@ -9,49 +9,51 @@
 #include <vector>
 #include <memory>
 
-enum class TomlError {
-	ReadFailed
-};
+namespace tomlparse {
+	enum class Error {
+		ReadFailed
+	};
 
-// TOML Types
-class TomlTable;
-typedef std::int64_t TomlInt;
-typedef double       TomlFloat;
-typedef bool         TomlBool;
-template <typename T>
-class TomlArray: public std::vector<T> {  };
-
-class TomlEntry {
-private:
-	std::unique_ptr<std::variant<TomlTable, TomlInt, TomlFloat, TomlBool, TomlArray<TomlEntry>>> value;
-public:
+	// TOML Types
+	class Table;
+	typedef std::int64_t Int;
+	typedef double       Float;
+	typedef bool         Bool;
 	template <typename T>
-	inline T get()
-	{
-		return std::get<T>(*this->value.get());
-	}
-};
+	class Array: public std::vector<T> {  };
 
-class TomlTable {
-private:
-	std::unordered_map<std::string, TomlEntry> entries;
-public:
-	template<typename T>
-	inline T get(std::string name)
-	{
-		return this->entries[name].get<T>();
-	}
+	class Entry {
+	private:
+		std::unique_ptr<std::variant<Table, Int, Float, Bool, Array<Entry>>> value;
+	public:
+		template <typename T>
+		inline T get()
+		{
+			return std::get<T>(*this->value.get());
+		}
+	};
 
-	inline std::unordered_map<std::string, TomlEntry> &
-	get_entries()
-	{
-		return this->entries;
-	}
-};
+	class Table {
+	private:
+		std::unordered_map<std::string, Entry> entries;
+	public:
+		template<typename T>
+		inline T get(std::string name)
+		{
+			return this->entries[name].get<T>();
+		}
 
-typedef TomlTable Toml; // A root-level toml content can be seen as just a regular table
+		inline std::unordered_map<std::string, Entry> &
+		get_entries()
+		{
+			return this->entries;
+		}
+	};
 
-std::expected<Toml, TomlError>
-tomlparse(std::ifstream &file);
+	typedef Table Toml; // A root-level toml content can be seen as just a regular table
+
+	std::expected<Toml, Error>
+	parse(std::ifstream &file);
+}
 
 #endif

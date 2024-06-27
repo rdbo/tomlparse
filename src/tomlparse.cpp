@@ -2,8 +2,10 @@
 #include <iostream>
 #include <sstream>
 
-std::expected<Toml, TomlError>
-tomlparse(std::ifstream &file)
+using namespace tomlparse;
+
+std::expected<Toml, Error>
+tomlparse::parse(std::ifstream &file)
 {
 	std::stringstream ss;
 	ss << file.rdbuf();
@@ -11,5 +13,5 @@ tomlparse(std::ifstream &file)
 	auto content = ss.str();
 	std::cout << content << std::endl;
 
-	return std::unexpected(TomlError::ReadFailed);
+	return std::unexpected(Error::ReadFailed);
 }
